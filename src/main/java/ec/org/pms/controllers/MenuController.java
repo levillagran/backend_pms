@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,9 +17,9 @@ import ec.org.pms.repositories.MenuRepository;
 import ec.org.pms.repositories.RoleRepository;
 import ec.org.pms.repositories.SubMenuRepository;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@CrossOrigin(origins = "*")
-@RequestMapping(value = "/api")
+@RequestMapping("/api")
 public class MenuController {
 	@Autowired
 	private MenuRepository menuRepo;
@@ -27,16 +28,16 @@ public class MenuController {
 	@Autowired
 	private RoleRepository roleRepo;
 	
-	@RequestMapping(value = "/menu")
-	public List<Menu> listMenu(@RequestBody Role rol) {
-		System.out.println(rol);
+	@PostMapping(value = "/menu")
+	public List<Menu> listMenu(@RequestBody Role role) {
+		System.out.println(role);
 		List<Menu> listMenu = new ArrayList<>();
 		boolean active = true;
-		listMenu = (List<Menu>) menuRepo.findAllByRoleIdAndActive(roleRepo.findByName(rol.getName()).getId(), active);
+		listMenu = (List<Menu>) menuRepo.findAllByRoleIdAndActive(roleRepo.findByName(role.getName()).getId(), active);
 		return listMenu;
 	}
 	
-	@RequestMapping(value = "/subMenu")
+	@PostMapping(value = "/subMenu")
 	public List<SubMenu> listSubMenu(@RequestBody List<SubMenu> menuIds) {
 		List<SubMenu> listSubMenu = new ArrayList<>();
 		boolean active = true;
