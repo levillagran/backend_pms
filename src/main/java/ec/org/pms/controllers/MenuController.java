@@ -30,7 +30,7 @@ public class MenuController {
 	
 	@PostMapping(value = "/menu")
 	public List<Menu> listMenu(@RequestBody Role role) {
-		System.out.println(role);
+		//System.out.println(role);
 		List<Menu> listMenu = new ArrayList<>();
 		boolean active = true;
 		listMenu = (List<Menu>) menuRepo.findAllByRoleIdAndActive(roleRepo.findByName(role.getName()).getId(), active);
@@ -39,10 +39,17 @@ public class MenuController {
 	
 	@PostMapping(value = "/subMenu")
 	public List<SubMenu> listSubMenu(@RequestBody List<SubMenu> menuIds) {
+		//System.out.println(menuIds);
 		List<SubMenu> listSubMenu = new ArrayList<>();
 		boolean active = true;
 		for (SubMenu menuId : menuIds) {
-			listSubMenu.add(subMenuRepo.findByMenuIdAndActive(menuId.getMenuId(), active));
+			List<SubMenu> aux = new ArrayList<>();
+			aux = subMenuRepo.findAllByMenuIdAndActive(menuId.getMenuId(), active);
+			if(aux != null){
+				for(SubMenu au : aux) {
+					listSubMenu.add(au);
+				}
+			}
 		}
 		return listSubMenu;
 	}

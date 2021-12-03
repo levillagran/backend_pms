@@ -16,16 +16,16 @@ import javax.persistence.Table;
 
 @Data
 @Entity
-@Table(name = "web_tbl_mnu")
-public class Menu {
+@Table(name = "dpa_tbl_opt")
+public class Provincia {
 	
 	@Id
-	@Column(name = "i_mnu_id")
+	@Column(name = "i_opt_id")
 	private Integer id;
-	@Column(name = "i_rol_id")
-	private Integer roleId;
-	@Column(name = "s_mnu_nme")
-	private String name;
-	@Column(name = "b_mnu_stt")
-	private boolean active;
+	@Column(name = "i_opt_cde")
+	private Integer codigo;
+	@Column(name = "s_opt_nme")
+	private String provincia;
+	@Column(name = "i_opt_tpe")
+	private Integer bandera;
 }
