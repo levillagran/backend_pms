@@ -9,7 +9,7 @@ package ec.org.pms.models;
  */
 import lombok.Data;
 
-import java.sql.Date;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,7 +29,7 @@ public class User {
 	@Column(name = "d_prs_dte_rgs")
 	private Date creationDate;
 	@Column(name = "s_prs_tme_rgs")
-	private Date creationTime;
+	private String creationTime;
 	@Column(name = "s_prs_lst_nme")
 	private String surname;
 	@Column(name = "s_prs_nme")

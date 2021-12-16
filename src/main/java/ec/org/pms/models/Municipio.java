@@ -40,6 +40,8 @@ public class Municipio {
 	private Integer mesFin;
 	@Column(name = "i_cnt_dte_end_prc_day")
 	private Integer diaFin;
+	@Column(name = "s_cnt_obs")
+	private String observaciones;
 	@Column(name = "i_stt_cde")
 	private Integer estado;
 }

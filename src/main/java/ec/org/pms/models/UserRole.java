@@ -9,7 +9,7 @@ package ec.org.pms.models;
  */
 import lombok.Data;
 
-import java.sql.Date;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,7 +27,7 @@ public class UserRole {
 	@Column(name = "d_prs_rol_dte_rgs")
 	private Date registerDate;
 	@Column(name = "s_prs_rol_tme_rgs")
-	private Date registerTime;
+	private String registerTime;
 	@Column(name = "i_rol_id")
 	private Integer rolId;
 	@Column(name = "i_prs_id")

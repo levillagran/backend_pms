@@ -22,5 +22,10 @@ public class CantonController {
 	public List<MunicipiosNoAddResponse> listAdd() {
 		return cantonService.findCantones();
 	}
+	
+	@GetMapping(value = "allWithoutUser")
+	public List<MunicipiosNoAddResponse> listWithoutUser() {
+		return cantonService.findCantonesSinUsuario();
+	}
 
 }

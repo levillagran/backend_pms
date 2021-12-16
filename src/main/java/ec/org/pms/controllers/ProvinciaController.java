@@ -20,7 +20,7 @@ public class ProvinciaController {
 	
 	@GetMapping(value = "all")
 	public List<Provincia> listAdd() {
-		return  (List<Provincia>) provinciaRepository.findAll();
+		return  (List<Provincia>) provinciaRepository.findAllByBandera(100);
 	}
 
 }

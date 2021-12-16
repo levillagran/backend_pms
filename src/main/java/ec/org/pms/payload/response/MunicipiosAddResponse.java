@@ -12,5 +12,7 @@ public class MunicipiosAddResponse {
 	private String provincia;
 	private String documento;
 	private String fecha;
+	private String fechaUS;
+	private String observaciones;
 
 }

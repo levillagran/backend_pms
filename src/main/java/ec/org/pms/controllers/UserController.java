@@ -5,24 +5,33 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import ec.org.pms.models.User;
-import ec.org.pms.repositories.UserRepository;
+import ec.org.pms.payload.request.UsuarioRequest;
+import ec.org.pms.payload.response.UsuariosResponse;
+import ec.org.pms.services.UsuarioService;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@CrossOrigin(origins = "*")
-@RequestMapping(value = "/api/users")
+@RequestMapping("/api/usuarios")
 public class UserController {
 	@Autowired
-	private UserRepository userRepo;
+	private UsuarioService usuarioService;
 	
-	@RequestMapping("/all")
-	public List<User> list() {
-		List<User> listU = new ArrayList<>();
-		listU = (List<User>) userRepo.findAll();
+	@GetMapping("/all")
+	public List<UsuariosResponse> listUsers() {
+		List<UsuariosResponse> listU = new ArrayList<>();
+		listU = usuarioService.findUsersAdd();
 		return listU;
+	}
+	
+	@PostMapping(value = "/save")
+	public List<UsuariosResponse> saveUsuario(@RequestBody UsuarioRequest usuario) {
+		return (List<UsuariosResponse>) usuarioService.save(usuario);
 	}
 
 }

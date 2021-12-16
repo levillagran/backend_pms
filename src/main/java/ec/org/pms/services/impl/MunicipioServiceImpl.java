@@ -40,6 +40,8 @@ public class MunicipioServiceImpl implements MunicipioService {
 			munAdd.setProvincia(prov.getProvincia());
 			munAdd.setDocumento("");
 			munAdd.setFecha(municipio.getDia() + "-" + municipio.getMes() + "-" + municipio.getAnio());
+			munAdd.setFechaUS(municipio.getMes() + "-" + municipio.getDia() + "-" + municipio.getAnio());
+			munAdd.setObservaciones(municipio.getObservaciones());
 			munAdd.setEstado(estado.getEstado());
 			municipiosAdd.add(munAdd);
 		}

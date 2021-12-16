@@ -1,6 +1,6 @@
 package ec.org.pms.payload.request;
 
-import org.springframework.web.multipart.MultipartFile;
+import java.util.Date;
 
 import lombok.Data;
 
@@ -9,9 +9,9 @@ public class MunicipioAdherirRequest {
 
 	private Integer id;
 	private String canton;
-	private String fechaAdd;
+	private Date fechaAdd;
 	private Integer estado;
 	private String observaciones;
-	private MultipartFile  archivo;
+	private String  archivo;
 
 }
