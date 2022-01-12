@@ -29,5 +29,5 @@ public class Archivo {
 	@Column(name = "s_img_type")
 	private String tipo;
 	@Column(name = "d_img_sze")
-	private Integer tamaño;
+	private Integer tamanio;
 }

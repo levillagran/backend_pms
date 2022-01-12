@@ -57,7 +57,7 @@ public class MunicipioController {
 			arc.setCantonId(muni.getId());
 			arc.setArchivo(muni.getDocumento());
 			arc.setTipo("pdf");
-			arc.setTamaño(2000);
+			arc.setTamanio(2000);
 			archivoRepository.save(arc);
 		} catch (Exception e) {
 			System.out.println(e);

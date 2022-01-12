@@ -1,6 +1,7 @@
 package ec.org.pms.services.impl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 	@Autowired
 	private ProvinciaRepository provinciaRepository;
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public List<UsuariosResponse> findUsersAdd() {
 		List<UsuariosResponse> usuarios = new ArrayList<>();
@@ -54,7 +54,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 					userRes.setNombre(user.getName());
 					userRes.setApellido(user.getSurname());
 					userRes.setCorreo(user.getMail());
-					userRes.setFecha(user.getCreationDate().getDate() + "-" + (user.getCreationDate().getMonth() +1) + "-" + (user.getCreationDate().getYear() + 1900));
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(user.getCreationDate());
+					userRes.setFecha(cal.get(Calendar.DAY_OF_MONTH) + "-" + (cal.get(Calendar.MONTH) +1) + "-" + (cal.get(Calendar.YEAR) + 1900));
 					userRes.setFechaUS(user.getCreationDate());
 					if (userRol.getSttId().equals(901)) {
 						userRes.setEstado("activado");
@@ -103,7 +105,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 				bandera = false;
 			}
 			user.setCreationDate(usuario.getFecha());
-			user.setCreationTime(usuario.getFecha().getHours() + ":" + usuario.getFecha().getMinutes() + ":" + usuario.getFecha().getSeconds());
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(usuario.getFecha());
+			user.setCreationTime(cal.get(Calendar.HOUR) + ":" + cal.get(Calendar.MINUTE) + ":" + cal.get(Calendar.SECOND));
 			user.setUsername(usuario.getUsuario());
 			user.setName(usuario.getNombre());
 			user.setSurname(usuario.getApellido());

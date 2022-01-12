@@ -1,7 +1,6 @@
 package ec.org.pms.services.impl;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -247,7 +246,6 @@ public class IndicadorServiceImpl implements IndicadorService {
 								if (indicador.getInicial() != null) {
 									double DoubleValue = resultado.getValor();
 									int IntValue = (int) DoubleValue;
-									System.out.println(IntValue);
 									switch (IntValue) {
 									case 1:
 										rojos = rojos + 1;
@@ -280,7 +278,6 @@ public class IndicadorServiceImpl implements IndicadorService {
 		datosEje.setData(verdesArreglo);
 		
 		datosEjes.add(datosEje);
-		System.out.println(datosEjes);
 		
 		datosEje = new DatosEje();
 		datosEje.setLabel("Satisfactorios");
@@ -288,7 +285,6 @@ public class IndicadorServiceImpl implements IndicadorService {
 		datosEje.setData(amarrillosArreglo);
 		
 		datosEjes.add(datosEje);
-		System.out.println(datosEjes);
 		
 		datosEje = new DatosEje();
 		datosEje.setLabel("Iniciales");
@@ -296,8 +292,6 @@ public class IndicadorServiceImpl implements IndicadorService {
 		datosEje.setData(rojosArreglo);
 		
 		datosEjes.add(datosEje);
-		
-		System.out.println(datosEjes);
 		
 		barData.setDatasets(datosEjes);
 		barData.setLabels(ejesArreglo);
