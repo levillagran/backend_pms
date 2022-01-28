@@ -26,6 +26,8 @@ public class Menu {
 	private Integer roleId;
 	@Column(name = "s_mnu_nme")
 	private String name;
+	@Column(name = "i_mnu_pst")
+	private String position;
 	@Column(name = "b_mnu_stt")
 	private boolean active;
 }

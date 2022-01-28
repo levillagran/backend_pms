@@ -56,7 +56,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 					userRes.setCorreo(user.getMail());
 					Calendar cal = Calendar.getInstance();
 					cal.setTime(user.getCreationDate());
-					userRes.setFecha(cal.get(Calendar.DAY_OF_MONTH) + "-" + (cal.get(Calendar.MONTH) +1) + "-" + (cal.get(Calendar.YEAR) + 1900));
+					userRes.setFecha(cal.get(Calendar.DAY_OF_MONTH) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.YEAR));
 					userRes.setFechaUS(user.getCreationDate());
 					if (userRol.getSttId().equals(901)) {
 						userRes.setEstado("activado");
