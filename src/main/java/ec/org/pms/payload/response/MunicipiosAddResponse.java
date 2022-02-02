@@ -14,5 +14,6 @@ public class MunicipiosAddResponse {
 	private String fecha;
 	private String fechaUS;
 	private String observaciones;
+	private Boolean archivo;
 
 }

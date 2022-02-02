@@ -16,8 +16,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Data
 @Entity
 @Table(name = "dta_tbl_prs")
@@ -38,7 +36,6 @@ public class User {
 	private String username;
 	@Column(name = "s_prs_eml")
 	private String mail;
-	@JsonIgnore
 	@Column(name = "s_prs_psw")
 	private String passwod;
 }

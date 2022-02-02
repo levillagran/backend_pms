@@ -44,7 +44,12 @@ public class MunicipioServiceImpl implements MunicipioService {
 			munAdd.setCanton(municipio.getCanton());
 			munAdd.setProvinciaId(municipio.getProvinciaId());
 			munAdd.setProvincia(prov.getProvincia());
-			munAdd.setDocumento("");
+			Municipio mun = municipioRepository.findById(municipio.getId()).get();
+			if(municipio.getDocumento().length() > 0) {
+				munAdd.setArchivo(true);
+			}else {
+				munAdd.setArchivo(false);
+			}
 			munAdd.setFecha(municipio.getDia() + "-" + municipio.getMes() + "-" + municipio.getAnio());
 			munAdd.setFechaUS(municipio.getMes() + "-" + municipio.getDia() + "-" + municipio.getAnio());
 			munAdd.setObservaciones(municipio.getObservaciones());
@@ -56,10 +61,12 @@ public class MunicipioServiceImpl implements MunicipioService {
 
 	@Override
 	public List<MunicipiosAddResponse> saveMunicipio(MunicipioAdherirRequest municipio) {
-
+		
 			Municipio muni = municipioRepository.findById(municipio.getId()).get();
 			muni.setEstado(municipio.getEstado());
-			muni.setDocumento(municipio.getArchivo());
+			if (municipio.getArchivo().length() > 1){
+				muni.setDocumento(municipio.getArchivo());
+			}
 			muni.setObservaciones(municipio.getObservaciones());
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(municipio.getFechaAdd());

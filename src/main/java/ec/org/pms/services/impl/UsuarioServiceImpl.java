@@ -112,7 +112,11 @@ public class UsuarioServiceImpl implements UsuarioService {
 			user.setName(usuario.getNombre());
 			user.setSurname(usuario.getApellido());
 			user.setMail(usuario.getCorreo());
-			user.setPasswod(passwordEncoder.encode(usuario.getClave()));
+			if(usuario.getClave().isBlank()) {
+				user.setPasswod(userRepository.findById(usuario.getId()).getPasswod());
+			}else {
+				user.setPasswod(passwordEncoder.encode(usuario.getClave()));
+			}
 			user = userRepository.save(user);
 			if(bandera) {
 				usRol.setId(userRoleRepository.findFirstByPersonId(user.getId()).getId());

@@ -39,7 +39,6 @@ public class MunicipioController {
 	
 	@GetMapping(value = "/municipios/comprobante/{id}")
 	public MunicipiosAddResponse docMunicipio(@PathVariable Integer id) {
-		System.out.println(id);
 		Municipio mun = municipioRepository.findById(id).get();
 		MunicipiosAddResponse  mar = new MunicipiosAddResponse();
 		mar.setDocumento(mun.getDocumento());
