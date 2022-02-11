@@ -48,6 +48,12 @@ public class Indicador {
 	private String description;
 	@Column(name = "b_main_obl")
 	private boolean obliged;
+	@Column(name = "b_main_dsn")
+	private boolean desnutrition;
+	@Column(name = "b_main_mtr")
+	private boolean maternity;
+	@Column(name = "b_main_vln")
+	private boolean violence;
 
 	@Column(name = "i_lvl_cde")
 	private Integer ejeId;

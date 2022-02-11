@@ -1,6 +1,7 @@
 package ec.org.pms.services.impl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ import ec.org.pms.payload.response.indicadorResponse.Datos;
 import ec.org.pms.payload.response.indicadorResponse.Hijo;
 import ec.org.pms.payload.response.indicadorResponse.Padre;
 import ec.org.pms.payload.response.indicadorResponse.Root;
+import ec.org.pms.payload.response.componenteResponse.Componente;
+import ec.org.pms.payload.response.componenteResponse.HijoComponente;
 import ec.org.pms.repositories.EjeRepository;
 import ec.org.pms.repositories.IndicadorRepository;
 import ec.org.pms.repositories.UserRoleRepository;
@@ -65,16 +68,42 @@ public class IndicadorServiceImpl implements IndicadorService {
 			data.setType(indicador.getType());
 			for (ValorIndicador valorIndicador : resultados) {
 				if (indicador.getId().equals(valorIndicador.getEjeId())) {
+					data.setValueIndicadorId(valorIndicador.getId());
 					if (valorIndicador != null && valorIndicador.getEjeId() > 0) {
-						data.setValue(valorIndicador.getValor());
+						data.setValue(String.valueOf(valorIndicador.getValor()));
 					} else {
 						data.setValue(null);
+					}
+					if (valorIndicador.getAnio() != null && valorIndicador.getMes() != null && valorIndicador.getDia() != null) {
+						data.setDate(String.valueOf(valorIndicador.getMes()) + "-" + String.valueOf(valorIndicador.getDia()) + "-" + String.valueOf(valorIndicador.getAnio()));
+					}
+					if (valorIndicador.getFecha() != null) {
+						Calendar cal = Calendar.getInstance();
+						cal.setTime(valorIndicador.getFecha());
+						data.setDateRegister(String.valueOf(cal.get(Calendar.MONTH) + 1) + "-" + String.valueOf(cal.get(Calendar.DAY_OF_MONTH)) + "-" + String.valueOf(cal.get(Calendar.YEAR)));
+					}
+					if (valorIndicador.getObservacion() != null) {
+						data.setObs(valorIndicador.getObservacion());
+					}else {
+						data.setObs("");
+					}
+					if (valorIndicador.getFuente() != null) {
+						data.setFont(valorIndicador.getFuente());
+					}
+					if(valorIndicador.getArchivo().length() > 0) {
+						data.setArchivo(true);
+					}else {
+						data.setArchivo(false);
 					}
 				}
 			}
 			data.setOption1(indicador.getInicial());
 			data.setOption2(indicador.getSatisfactorio());
 			data.setOption3(indicador.getOptimo());
+			data.setObligatory(indicador.isObliged());
+			data.setDesnutrition(indicador.isDesnutrition());
+			data.setMaternity(indicador.isMaternity());
+			data.setViolence(indicador.isViolence());
 			childre = new Hijo();
 			childre.setKey(String.valueOf(indicador.getId()));
 			childre.setData(data);
@@ -140,16 +169,30 @@ public class IndicadorServiceImpl implements IndicadorService {
 		ValorIndicador indicador = new ValorIndicador();
 		int level = indicadorRepository.findBycode(Integer.valueOf(indicadorSave.getCode())).getId();
 		UserRole userRol = userRoleRepository.findFirstByPersonId(indicadorSave.getUserId());
-
+		
+		if (indicadorSave.getArchivo().length() > 1){
+			indicador.setArchivo(indicadorSave.getArchivo());
+		}else {
+			indicador = valorIndicadorRepository.findById(indicadorSave.getValueIndicadorId()).get();
+		}
+		
 		indicador.setId(indicadorSave.getIndicadorId());
 		indicador.setCantonId(userRol.getEntId());
 		indicador.setEjeId(level);
 		indicador.setValor(Double.valueOf(indicadorSave.getValue()));
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(indicadorSave.getDate());
+		indicador.setAnio(cal.get(Calendar.YEAR));
+		indicador.setMes((cal.get(Calendar.MONTH) + 1));
+		indicador.setDia(cal.get(Calendar.DAY_OF_MONTH));
+		indicador.setFecha(indicadorSave.getDateRegister());
+		indicador.setFuente(indicadorSave.getFont());
+		indicador.setObservacion(indicadorSave.getObs());
 		indicador.setPersonaId(userRol.getId());
 		indicador.setEstado(91);
-
+		
 		indicador = valorIndicadorRepository.save(indicador);
-
+		
 		return findIndicadores(indicadorSave.getUserId());
 	}
 
@@ -173,6 +216,7 @@ public class IndicadorServiceImpl implements IndicadorService {
 					for (Indicador indicador : indicadores) {
 						if (indicador.getEjeId().equals(determinante.getId())) {
 							semaforo = new SemaforizacionResponse();
+							semaforo.setCodigo(String.valueOf(indicador.getCode()));
 							semaforo.setIndicador(indicador.getName());
 							UserRole user = userRoleRepository.findById(personaId).get();
 							Integer cantonId = user.getEntId();
@@ -182,6 +226,8 @@ public class IndicadorServiceImpl implements IndicadorService {
 							if (resultado != null) {
 								if (indicador.getInicial() != null) {
 									double DoubleValue = resultado.getValor();
+									semaforo.setValor(resultado.getValor());
+									semaforo.setTipo(indicador.getType());
 									int IntValue = (int) DoubleValue;
 									switch (IntValue) {
 									case 1:
@@ -297,6 +343,67 @@ public class IndicadorServiceImpl implements IndicadorService {
 		barData.setLabels(ejesArreglo);
 
 		return barData;
+	}
+
+	@Override
+	public List<Componente> findComponentes() {
+		List<Eje> ejes = ejeRepository.findByIdLessThan(10);
+		List<Componente> comps = new ArrayList<>();
+		for (Eje eje : ejes) {
+			Componente comp = new Componente();
+			comp.setId(String.valueOf(eje.getId()));
+			comp.setName(eje.getName());
+			comp.setImage(eje.getPath());
+			comps.add(comp);
+		}
+		return comps;
+	}
+
+	@Override
+	public List<HijoComponente> findComponenteDetalle(Integer componenteId) {
+		Eje eje = ejeRepository.findById(componenteId).get();
+		List<Eje> determinantes = ejeRepository.findByParent(componenteId);
+		List<HijoComponente> ejes = new ArrayList<>();
+		List<HijoComponente> data = new ArrayList<>();
+		
+		HijoComponente hEje;
+		List<HijoComponente> hIndi;
+		
+		HijoComponente hComp = new HijoComponente();
+		hComp.setLabel("Componente");
+		hComp.setType("componente");
+		hComp.setClassName("p-person");
+		hComp.setExpanded(true);
+		Componente det = new Componente();
+		det.setName(eje.getName());
+		det.setImage(eje.getPath());
+		hComp.setData(det);
+		
+		for (Eje determinante : determinantes) {
+			hEje = new HijoComponente();
+			hEje.setLabel(determinante.getName());
+			hEje.setType("eje");
+			hEje.setClassName("eje");
+			hEje.setExpanded(true);
+			List<Indicador> indicadoresAux = (List<Indicador>) indicadorRepository.findByEjeId(determinante.getId());
+			hIndi = new ArrayList<>();
+			for (Indicador indi : indicadoresAux) {
+				HijoComponente hIndic = new HijoComponente();
+				hIndic.setLabel(indi.getName());
+				hIndic.setType("indicador");
+				hIndic.setClassName("p-person");
+				hIndic.setExpanded(true);
+				Componente detalle = new Componente();
+				detalle.setName(indi.getDescription());
+				hIndic.setData(detalle);
+				hIndi.add(hIndic);
+			}
+			hEje.setChildren(hIndi);
+			ejes.add(hEje);
+		}
+		hComp.setChildren(ejes);
+		data.add(hComp);
+		return data;
 	}
 
 }

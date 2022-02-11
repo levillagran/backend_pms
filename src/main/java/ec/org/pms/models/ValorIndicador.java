@@ -36,6 +36,8 @@ public class ValorIndicador {
 	private Integer mes;
 	@Column(name = "i_crt_day")
 	private Integer dia;
+	@Column(name = "s_crt_src")
+	private String fuente;
 	@Column(name = "s_crt_obs")
 	private String observacion;
 	@Column(name = "i_prs_rol_id")
@@ -46,4 +48,7 @@ public class ValorIndicador {
 	private Date hora;
 	@Column(name = "i_stt_id")
 	private Integer estado;
+	@Column(name = "s_mnc_fle")
+	private String archivo;
+	
 }

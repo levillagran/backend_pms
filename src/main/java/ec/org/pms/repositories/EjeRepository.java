@@ -9,4 +9,7 @@ import ec.org.pms.models.Eje;
 public interface EjeRepository extends PagingAndSortingRepository<Eje, Integer>{
 	List<Eje> findByIdLessThan(Integer valor);
 	List<Eje> findByIdGreaterThan(Integer valor);
+	int countByIdLessThan(Integer valor);
+	int countByIdGreaterThan(Integer valor);
+	List<Eje> findByParent(Integer valor);
 }
