@@ -26,4 +26,9 @@ public class Datos {
 	private String font;
 	private String obs;
 	private Boolean archivo;
+	private Boolean cuantitativo;
+	private Integer limite1;
+	private Integer limite2;
+	private Double limite3;
+	private Integer limite4;
 }

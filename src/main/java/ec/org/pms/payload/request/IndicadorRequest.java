@@ -10,6 +10,7 @@ public class IndicadorRequest {
 	private Integer indicadorId;
 	private String code;
 	private Integer userId;
+	private Integer cantonId;
 	private Integer ValueIndicadorId;
 	private String value;
 	private Date date;

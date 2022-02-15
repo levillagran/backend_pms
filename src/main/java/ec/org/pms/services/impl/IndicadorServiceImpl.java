@@ -66,33 +66,40 @@ public class IndicadorServiceImpl implements IndicadorService {
 			data.setName(indicador.getName());
 			data.setDescription(indicador.getDescription());
 			data.setType(indicador.getType());
+			data.setCuantitativo(indicador.isQuantitative());
 			for (ValorIndicador valorIndicador : resultados) {
-				if (indicador.getId().equals(valorIndicador.getEjeId())) {
+				if (indicador.getId().equals(valorIndicador.getEjeId())
+						&& valorIndicador.getCantonId().equals(cantonId)) {
 					data.setValueIndicadorId(valorIndicador.getId());
 					if (valorIndicador != null && valorIndicador.getEjeId() > 0) {
 						data.setValue(String.valueOf(valorIndicador.getValor()));
 					} else {
 						data.setValue(null);
 					}
-					if (valorIndicador.getAnio() != null && valorIndicador.getMes() != null && valorIndicador.getDia() != null) {
-						data.setDate(String.valueOf(valorIndicador.getMes()) + "-" + String.valueOf(valorIndicador.getDia()) + "-" + String.valueOf(valorIndicador.getAnio()));
+					if (valorIndicador.getAnio() != null && valorIndicador.getMes() != null
+							&& valorIndicador.getDia() != null) {
+						data.setDate(
+								String.valueOf(valorIndicador.getMes()) + "-" + String.valueOf(valorIndicador.getDia())
+										+ "-" + String.valueOf(valorIndicador.getAnio()));
 					}
 					if (valorIndicador.getFecha() != null) {
 						Calendar cal = Calendar.getInstance();
 						cal.setTime(valorIndicador.getFecha());
-						data.setDateRegister(String.valueOf(cal.get(Calendar.MONTH) + 1) + "-" + String.valueOf(cal.get(Calendar.DAY_OF_MONTH)) + "-" + String.valueOf(cal.get(Calendar.YEAR)));
+						data.setDateRegister(String.valueOf(cal.get(Calendar.MONTH) + 1) + "-"
+								+ String.valueOf(cal.get(Calendar.DAY_OF_MONTH)) + "-"
+								+ String.valueOf(cal.get(Calendar.YEAR)));
 					}
 					if (valorIndicador.getObservacion() != null) {
 						data.setObs(valorIndicador.getObservacion());
-					}else {
+					} else {
 						data.setObs("");
 					}
 					if (valorIndicador.getFuente() != null) {
 						data.setFont(valorIndicador.getFuente());
 					}
-					if(valorIndicador.getArchivo().length() > 0) {
+					if (valorIndicador.getArchivo().length() > 0) {
 						data.setArchivo(true);
-					}else {
+					} else {
 						data.setArchivo(false);
 					}
 				}
@@ -100,6 +107,12 @@ public class IndicadorServiceImpl implements IndicadorService {
 			data.setOption1(indicador.getInicial());
 			data.setOption2(indicador.getSatisfactorio());
 			data.setOption3(indicador.getOptimo());
+			if (indicador.isQuantitative()) {
+				data.setLimite1(Integer.valueOf(indicador.getLimite1()));
+				data.setLimite2(Integer.valueOf(indicador.getLimite2()));
+				data.setLimite3(Double.valueOf(indicador.getLimite3()));
+				data.setLimite4(Integer.valueOf(indicador.getLimite4()));
+			}
 			data.setObligatory(indicador.isObliged());
 			data.setDesnutrition(indicador.isDesnutrition());
 			data.setMaternity(indicador.isMaternity());
@@ -169,30 +182,39 @@ public class IndicadorServiceImpl implements IndicadorService {
 		ValorIndicador indicador = new ValorIndicador();
 		int level = indicadorRepository.findBycode(Integer.valueOf(indicadorSave.getCode())).getId();
 		UserRole userRol = userRoleRepository.findFirstByPersonId(indicadorSave.getUserId());
-		
-		if (indicadorSave.getArchivo().length() > 1){
+		if (indicadorSave.getArchivo().length() > 1) {
 			indicador.setArchivo(indicadorSave.getArchivo());
-		}else {
+		} else {
 			indicador = valorIndicadorRepository.findById(indicadorSave.getValueIndicadorId()).get();
 		}
-		
-		indicador.setId(indicadorSave.getIndicadorId());
+		System.out.println(indicadorSave.getValueIndicadorId());
+		if (indicadorSave.getValueIndicadorId() != null) {
+			indicador.setId(indicadorSave.getValueIndicadorId());
+		} else {
+			ValorIndicador indicadorAux = valorIndicadorRepository.findFirstByOrderByIdDesc();
+			indicador.setId(indicadorAux.getId() + 1);
+			System.out.println(indicador.getId());
+		}
 		indicador.setCantonId(userRol.getEntId());
 		indicador.setEjeId(level);
 		indicador.setValor(Double.valueOf(indicadorSave.getValue()));
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(indicadorSave.getDate());
-		indicador.setAnio(cal.get(Calendar.YEAR));
-		indicador.setMes((cal.get(Calendar.MONTH) + 1));
-		indicador.setDia(cal.get(Calendar.DAY_OF_MONTH));
-		indicador.setFecha(indicadorSave.getDateRegister());
+		if (indicadorSave.getDate() != null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(indicadorSave.getDate());
+			indicador.setAnio(cal.get(Calendar.YEAR));
+			indicador.setMes((cal.get(Calendar.MONTH) + 1));
+			indicador.setDia(cal.get(Calendar.DAY_OF_MONTH));
+		}
+		if (indicadorSave.getDateRegister() != null) {
+			indicador.setFecha(indicadorSave.getDateRegister());
+		}
 		indicador.setFuente(indicadorSave.getFont());
 		indicador.setObservacion(indicadorSave.getObs());
 		indicador.setPersonaId(userRol.getId());
 		indicador.setEstado(91);
-		
+
 		indicador = valorIndicadorRepository.save(indicador);
-		
+
 		return findIndicadores(indicadorSave.getUserId());
 	}
 
@@ -224,11 +246,12 @@ public class IndicadorServiceImpl implements IndicadorService {
 									indicador.getId());
 
 							if (resultado != null) {
-								if (indicador.getInicial() != null) {
-									double DoubleValue = resultado.getValor();
-									semaforo.setValor(resultado.getValor());
-									semaforo.setTipo(indicador.getType());
-									int IntValue = (int) DoubleValue;
+								double DoubleValue = resultado.getValor();
+								semaforo.setValor(resultado.getValor());
+								semaforo.setTipo(indicador.getType());
+								int IntValue = (int) DoubleValue;
+
+								if (!indicador.isQuantitative()) {
 									switch (IntValue) {
 									case 1:
 										semaforo.setSemaforizacion("red");
@@ -239,13 +262,34 @@ public class IndicadorServiceImpl implements IndicadorService {
 									case 3:
 										semaforo.setSemaforizacion("green");
 										break;
-
 									default:
 										break;
 									}
+								} else if (Integer.parseInt(indicador.getLimite1()) < Integer
+										.parseInt(indicador.getLimite4())) {
+									if (Integer.parseInt(indicador.getLimite1()) <= IntValue
+											&& IntValue <= Integer.parseInt(indicador.getLimite2())) {
+										semaforo.setSemaforizacion("red");
+									} else if (Integer.parseInt(indicador.getLimite2()) < IntValue
+											&& IntValue <= Integer.parseInt(indicador.getLimite3())) {
+										semaforo.setSemaforizacion("yellow");
+									} else if (Integer.parseInt(indicador.getLimite3()) < IntValue
+											&& IntValue <= Integer.parseInt(indicador.getLimite4())) {
+										semaforo.setSemaforizacion("green");
+									}
+								} else {
+									if (Integer.parseInt(indicador.getLimite1()) >= IntValue
+											&& IntValue >= Integer.parseInt(indicador.getLimite2())) {
+										semaforo.setSemaforizacion("red");
+									} else if (Integer.parseInt(indicador.getLimite2()) > IntValue
+											&& IntValue >= Double.valueOf(indicador.getLimite3())) {
+										semaforo.setSemaforizacion("yellow");
+									} else if (Double.valueOf(indicador.getLimite3()) > IntValue
+											&& IntValue >= Integer.parseInt(indicador.getLimite4())) {
+										semaforo.setSemaforizacion("green");
+									}
 								}
 							}
-
 							semaforos.add(semaforo);
 						}
 					}
@@ -270,7 +314,7 @@ public class IndicadorServiceImpl implements IndicadorService {
 		int verdes = 0;
 		int amarillos = 0;
 		int rojos = 0;
-		
+
 		UserRole user = userRoleRepository.findById(personaId).get();
 		Integer cantonId = user.getEntId();
 
@@ -282,12 +326,12 @@ public class IndicadorServiceImpl implements IndicadorService {
 			rojos = 0;
 			for (Eje determinante : determinantes) {
 				if (determinante.getParent().equals(eje.getId())) {
-					
+
 					for (Indicador indicador : indicadores) {
 						if (indicador.getEjeId().equals(determinante.getId())) {
 							ValorIndicador resultado = valorIndicadorRepository.findByCantonIdAndEjeId(cantonId,
 									indicador.getId());
-							
+
 							if (resultado != null) {
 								if (indicador.getInicial() != null) {
 									double DoubleValue = resultado.getValor();
@@ -322,23 +366,23 @@ public class IndicadorServiceImpl implements IndicadorService {
 		datosEje.setLabel("Optimos");
 		datosEje.setBackgroundColor("green");
 		datosEje.setData(verdesArreglo);
-		
+
 		datosEjes.add(datosEje);
-		
+
 		datosEje = new DatosEje();
 		datosEje.setLabel("Satisfactorios");
 		datosEje.setBackgroundColor("yellow");
 		datosEje.setData(amarrillosArreglo);
-		
+
 		datosEjes.add(datosEje);
-		
+
 		datosEje = new DatosEje();
 		datosEje.setLabel("Iniciales");
 		datosEje.setBackgroundColor("red");
 		datosEje.setData(rojosArreglo);
-		
+
 		datosEjes.add(datosEje);
-		
+
 		barData.setDatasets(datosEjes);
 		barData.setLabels(ejesArreglo);
 
@@ -365,10 +409,10 @@ public class IndicadorServiceImpl implements IndicadorService {
 		List<Eje> determinantes = ejeRepository.findByParent(componenteId);
 		List<HijoComponente> ejes = new ArrayList<>();
 		List<HijoComponente> data = new ArrayList<>();
-		
+
 		HijoComponente hEje;
 		List<HijoComponente> hIndi;
-		
+
 		HijoComponente hComp = new HijoComponente();
 		hComp.setLabel("Componente");
 		hComp.setType("componente");
@@ -378,7 +422,7 @@ public class IndicadorServiceImpl implements IndicadorService {
 		det.setName(eje.getName());
 		det.setImage(eje.getPath());
 		hComp.setData(det);
-		
+
 		for (Eje determinante : determinantes) {
 			hEje = new HijoComponente();
 			hEje.setLabel(determinante.getName());
@@ -404,6 +448,12 @@ public class IndicadorServiceImpl implements IndicadorService {
 		hComp.setChildren(ejes);
 		data.add(hComp);
 		return data;
+	}
+
+	@Override
+	public String comprobanteIndicador(Integer valorIndicadorId) {
+		ValorIndicador indicadorData = valorIndicadorRepository.findById(valorIndicadorId).get();
+		return indicadorData.getArchivo();
 	}
 
 }

@@ -36,6 +36,11 @@ public class IndicadorController {
 	@GetMapping(value = "/indicadores/semaforizacion/{id}")
 	public List<SemaforizacionResponse> semaforizacion(@PathVariable String id) {
 		return indicadorService.semaforizacion(Integer.parseInt(id));
+	}	
+	
+	@GetMapping(value = "/indicadores/comprobante/{id}")
+	public String comprobanteIndicador(@PathVariable Integer id) {
+		return indicadorService.comprobanteIndicador(id);
 	}
 
 }

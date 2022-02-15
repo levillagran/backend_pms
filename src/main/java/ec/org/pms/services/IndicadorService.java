@@ -16,4 +16,5 @@ public interface IndicadorService {
 	public DatosBarra ejes(Integer cantonId);
 	public List<Componente> findComponentes();
 	public List<HijoComponente> findComponenteDetalle(Integer componenteId);
+	public String comprobanteIndicador(Integer valorIndicadorId);
 }
