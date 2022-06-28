@@ -331,11 +331,11 @@ public class IndicadorServiceImpl implements IndicadorService {
 						if (indicador.getEjeId().equals(determinante.getId())) {
 							ValorIndicador resultado = valorIndicadorRepository.findByCantonIdAndEjeId(cantonId,
 									indicador.getId());
-
 							if (resultado != null) {
-								if (indicador.getInicial() != null) {
-									double DoubleValue = resultado.getValor();
-									int IntValue = (int) DoubleValue;
+								double DoubleValue = resultado.getValor();
+								int IntValue = (int) DoubleValue;
+
+								if (!indicador.isQuantitative()) {
 									switch (IntValue) {
 									case 1:
 										rojos = rojos + 1;
@@ -349,12 +349,33 @@ public class IndicadorServiceImpl implements IndicadorService {
 									default:
 										break;
 									}
+								} else if (Integer.parseInt(indicador.getLimite1()) < Integer
+										.parseInt(indicador.getLimite4())) {
+									if (Integer.parseInt(indicador.getLimite1()) <= IntValue
+											&& IntValue <= Integer.parseInt(indicador.getLimite2())) {
+										rojos = rojos + 1;
+									} else if (Integer.parseInt(indicador.getLimite2()) < IntValue
+											&& IntValue <= Integer.parseInt(indicador.getLimite3())) {
+										amarillos = amarillos + 1;
+									} else if (Integer.parseInt(indicador.getLimite3()) < IntValue
+											&& IntValue <= Integer.parseInt(indicador.getLimite4())) {
+										verdes = verdes + 1;
+									}
+								} else {
+									if (Integer.parseInt(indicador.getLimite1()) >= IntValue
+											&& IntValue >= Integer.parseInt(indicador.getLimite2())) {
+										rojos = rojos + 1;
+									} else if (Integer.parseInt(indicador.getLimite2()) > IntValue
+											&& IntValue >= Double.valueOf(indicador.getLimite3())) {
+										amarillos = amarillos + 1;
+									} else if (Double.valueOf(indicador.getLimite3()) > IntValue
+											&& IntValue >= Integer.parseInt(indicador.getLimite4())) {
+										verdes = verdes + 1;
+									}
 								}
 							}
 						}
 					}
-
-					;
 				}
 			}
 			verdesArreglo[i] = verdes;

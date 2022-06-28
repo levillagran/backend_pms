@@ -12,4 +12,6 @@ public interface EjeRepository extends PagingAndSortingRepository<Eje, Integer>{
 	int countByIdLessThan(Integer valor);
 	int countByIdGreaterThan(Integer valor);
 	List<Eje> findByParent(Integer valor);
+	List<Eje> findAllByParent(Integer valor);
+	Eje findFirstByParentOrderByIdDesc(Integer valor);
 }
