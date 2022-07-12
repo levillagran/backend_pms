@@ -14,6 +14,6 @@ public interface GestionService {
 	public List<Eje> saveEje(Eje eje);
 	public Eje findEje(Integer id);
 	public List<Indicador> findAllIndicadores(Integer id);
-	public List<Indicador> saveIndicador(Eje eje);
+	public List<Indicador> saveIndicador(Indicador indicador);
 	public Indicador findIndicador(Integer id);
 }

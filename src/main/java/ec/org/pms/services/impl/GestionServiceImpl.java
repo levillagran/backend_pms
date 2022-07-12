@@ -15,10 +15,10 @@ import ec.org.pms.services.GestionService;
 
 @Service("gestionService")
 public class GestionServiceImpl implements GestionService {
-	
+
 	@Autowired
 	private EjeRepository ejeRepository;
-	
+
 	@Autowired
 	private IndicadorRepository indicadorRepository;
 
@@ -39,10 +39,18 @@ public class GestionServiceImpl implements GestionService {
 	@Override
 	public List<Componente> saveComponente(Componente componente) {
 		Eje eje = new Eje();
-		eje.setId(Integer.parseInt(componente.getId()));
-		eje.setName(componente.getName());
-		eje.setParent(-99);
-		ejeRepository.save(eje);
+		if (componente.getId() != null) {
+			eje = ejeRepository.findById(Integer.parseInt(componente.getId())).get();
+			eje.setName(componente.getName());
+			ejeRepository.save(eje);
+		} else {
+			Eje ejeAux = ejeRepository.findFirstByParentOrderByIdDesc(-99);
+			eje.setId(ejeAux.getId() + 1);
+			eje.setName(componente.getName());
+			eje.setParent(-99);
+			eje.setPath(ejeAux.getPath());
+			ejeRepository.save(eje);
+		}
 		return findAllComponentes();
 	}
 
@@ -64,7 +72,7 @@ public class GestionServiceImpl implements GestionService {
 	public List<Eje> saveEje(Eje eje) {
 		if (eje.getId() != null) {
 			ejeRepository.save(eje);
-		}else {
+		} else {
 			Eje ej = ejeRepository.findFirstByParentOrderByIdDesc(eje.getParent());
 			eje.setId(ej.getId() + 1);
 			ejeRepository.save(eje);
@@ -74,7 +82,7 @@ public class GestionServiceImpl implements GestionService {
 
 	@Override
 	public Eje findEje(Integer id) {
-		return  ejeRepository.findById(id).get();
+		return ejeRepository.findById(id).get();
 	}
 
 	@Override
@@ -83,9 +91,17 @@ public class GestionServiceImpl implements GestionService {
 	}
 
 	@Override
-	public List<Indicador> saveIndicador(Eje eje) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Indicador> saveIndicador(Indicador indicador) {
+		if (indicador.getCode() != null) {
+			indicadorRepository.save(indicador);
+		} else {
+			Indicador ind = indicadorRepository.findFirstByEjeIdOrderByCodeDesc(indicador.getEjeId());
+			indicador.setCode(ind.getCode() + 1);
+			Indicador indi = indicadorRepository.findFirstByOrderByIdDesc();
+			indicador.setId(indi.getId() + 1);
+			indicadorRepository.save(indicador);
+		}
+		return findAllIndicadores(indicador.getEjeId());
 	}
 
 	@Override

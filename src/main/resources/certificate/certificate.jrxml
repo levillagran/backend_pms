@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.19.0.final using JasperReports Library version 6.19.0-646c68931cebf1a58bc65c4359d1f0ca223c5e94  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="certificate" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d6aab791-0222-4620-8306-3e68c32be6ee">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="pms"/>
+	<subDataset name="Dataset1" uuid="823fdd45-ff11-47ee-a28a-fcb8bf840949"/>
+	<parameter name="municipioId" class="java.lang.Integer"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT c.i_cnt_cde code, c.s_cnt_nme nombre 
+					FROM dpa_tbl_cnt c
+					WHERE c.i_cnt_cde = $P{municipioId}]]>
+	</queryString>
+	<field name="nombre" class="java.lang.String"/>
+	<background>
+		<band height="555" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<image>
+				<reportElement x="0" y="0" width="130" height="555" uuid="753485b8-0df3-4c63-8f53-09131f87a4a7"/>
+				<imageExpression><![CDATA["bordeIzCertificado.png"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="120" y="100" width="690" height="455" uuid="fefffd42-9b2e-40a1-ba13-3fe3767c3d13"/>
+				<imageExpression><![CDATA["fondoCertificado.png"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="640" y="0" width="170" height="110" uuid="befa185e-7125-4ea0-9891-dbd222669144"/>
+				<imageExpression><![CDATA["logoCertificado.png"]]></imageExpression>
+			</image>
+		</band>
+	</background>
+	<title>
+		<band height="555" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<staticText>
+				<reportElement x="180" y="80" width="420" height="35" uuid="fae78f85-9697-4625-a0c7-dcefe5b8dc81"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial Narrow" size="19"/>
+				</textElement>
+				<text><![CDATA[El Ministerio de Salud Pública, acuerda otorgar el presente]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="180" y="140" width="421" height="35" uuid="b4b479fc-972e-4846-902c-a4c9030109b5"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="Arial Narrow" size="30" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CERTIFICADO COMO MUNICIPIO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="179" y="175" width="421" height="40" uuid="0b0007b6-b551-4af0-9acd-7bbd328c2772"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="Arial Narrow" size="30" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PROMOTOR DE LA SALUD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="179" y="270" width="420" height="35" uuid="7ac53a34-e463-40ca-9954-62acd14cff24"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial Narrow" size="19"/>
+				</textElement>
+				<text><![CDATA[Al Gobierno Autónomo Descentralizado del cantón de]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="99" y="330" width="580" height="40" uuid="ed2c1564-9568-4604-8c40-3adb7059dd5a"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial Narrow" size="25" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="180" y="420" width="420" height="20" uuid="d73231a5-3139-4b35-a9ac-79b73c6ddedc"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial Narrow" size="15"/>
+				</textElement>
+				<text><![CDATA[Verónica Espinosa]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="180" y="440" width="421" height="20" uuid="f921f6d4-76fd-4a60-81ed-ebb11dd65031"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial Narrow" size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ministra de Salud Pública del Ecuador]]></text>
+			</staticText>
+			<textField pattern="d/M/yy">
+				<reportElement x="580" y="460" width="99" height="20" uuid="dc8a3637-4f7a-4cde-b733-144489899241"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial Narrow" size="15"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+</jasperReport>

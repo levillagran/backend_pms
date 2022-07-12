@@ -59,8 +59,8 @@ public class GestionController {
 	}
 	
 	@PostMapping(value = "/gestion/saveIndicador")
-	public List<Indicador> saveIndicador(@RequestBody Eje eje) {
-		return gestionService.saveIndicador(eje);
+	public List<Indicador> saveIndicador(@RequestBody Indicador indicador) {
+		return gestionService.saveIndicador(indicador);
 	}
 	
 	@GetMapping(value = "/gestion/getIndicador/{id}")

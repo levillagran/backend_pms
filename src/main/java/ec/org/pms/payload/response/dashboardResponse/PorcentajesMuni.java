@@ -6,6 +6,7 @@ import lombok.Data;
 public class PorcentajesMuni {
 
 	private String id;
+	private String province;
 	private String name;
 	private String status;
 	private String porcentaje;

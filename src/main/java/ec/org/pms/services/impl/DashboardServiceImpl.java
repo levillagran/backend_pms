@@ -71,6 +71,7 @@ public class DashboardServiceImpl implements DashboardService {
 		PorcentajesMuni porcentajesMuni;
 		for (MunicipiosAddResponse muniAdd : muniAdds) {
 			porcentajesMuni = new PorcentajesMuni();
+			porcentajesMuni.setProvince(muniAdd.getProvincia());
 			porcentajesMuni.setName(muniAdd.getCanton());
 			porcentajesMuni.setId(String.valueOf(muniAdd.getCantonId()));
 			porcentajesMuni.setStatus("Promotor");
