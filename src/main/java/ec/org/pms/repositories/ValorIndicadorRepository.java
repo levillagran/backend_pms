@@ -11,4 +11,5 @@ public interface ValorIndicadorRepository extends PagingAndSortingRepository<Val
 	ValorIndicador findByCantonIdAndEjeId(Integer cantonId, Integer ejeId);
 	int countByCantonId(Integer cantonId);
 	ValorIndicador findFirstByOrderByIdDesc();
+	boolean existsByCantonIdAndAnio(Integer id, Integer anio);
 }

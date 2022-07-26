@@ -1,11 +1,17 @@
 package ec.org.pms.services.impl;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 
 import ec.org.pms.models.Documento;
 import ec.org.pms.models.Eje;
@@ -27,10 +33,14 @@ import ec.org.pms.repositories.EjeRepository;
 import ec.org.pms.repositories.IndicadorRepository;
 import ec.org.pms.repositories.UserRoleRepository;
 import ec.org.pms.repositories.ValorIndicadorRepository;
-import ec.org.pms.services.IndicadorService;
+import ec.org.pms.services.CertificacionService;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;;
 
-@Service("indicadorService")
-public class IndicadorServiceImpl implements IndicadorService {
+@Service("certificacionService")
+public class CertificacionServiceImpl implements CertificacionService {
 
 	@Autowired
 	private EjeRepository ejeRepository;
@@ -42,6 +52,8 @@ public class IndicadorServiceImpl implements IndicadorService {
 	private UserRoleRepository userRoleRepository;
 	@Autowired
 	private DocumentoRepository docRepository;
+	@Autowired
+	private DataSource dataSource;
 
 	@Override
 	public List<Root> findIndicadores(Integer personaId) {
@@ -227,7 +239,7 @@ public class IndicadorServiceImpl implements IndicadorService {
 	}
 
 	@Override
-	public List<SemaforizacionResponse> semaforizacion(Integer personaId) {
+	public List<SemaforizacionResponse> semaforizacion(Integer cantonId) {
 		List<Eje> ejes = ejeRepository.findByIdLessThan(10);
 		List<Eje> determinantes = ejeRepository.findByIdGreaterThan(10);
 		List<Indicador> indicadores = (List<Indicador>) indicadorRepository.findAll();
@@ -248,8 +260,8 @@ public class IndicadorServiceImpl implements IndicadorService {
 							semaforo = new SemaforizacionResponse();
 							semaforo.setCodigo(String.valueOf(indicador.getCode()));
 							semaforo.setIndicador(indicador.getName());
-							UserRole user = userRoleRepository.findById(personaId).get();
-							Integer cantonId = user.getEntId();
+							//UserRole user = userRoleRepository.findById(personaId).get();
+							//Integer cantonId = user.getEntId();
 							ValorIndicador resultado = valorIndicadorRepository.findByCantonIdAndEjeId(cantonId,
 									indicador.getId());
 
@@ -257,6 +269,8 @@ public class IndicadorServiceImpl implements IndicadorService {
 								double DoubleValue = resultado.getValor();
 								semaforo.setValor(resultado.getValor());
 								semaforo.setTipo(indicador.getType());
+								semaforo.setValorIndicadorId(resultado.getId());
+								semaforo.setVoucher(resultado.getArchivo() != null ? true : false);
 								int IntValue = (int) DoubleValue;
 
 								if (!indicador.isQuantitative()) {
@@ -485,11 +499,27 @@ public class IndicadorServiceImpl implements IndicadorService {
 		Documento doc = docRepository.findById(indicadorData.getArchivo()).get();
 		return doc.getDocumento();
 	}
-
+	
 	@Override
-	public boolean esCertificable(Integer personaId) {
-		UserRole user = userRoleRepository.findById(personaId).get();
-		return valorIndicadorRepository.existsByCantonIdAndAnio(user.getEntId(), java.time.LocalDate.now().getYear());
+	public String createCertificado(Integer cantonId) {
+		try {
+			Map<String, Object> parameters = new HashMap<>();
+			parameters.put("municipioId", cantonId);
+
+			JasperPrint empReport = JasperFillManager.fillReport(
+					JasperCompileManager.compileReport(
+							ResourceUtils.getFile("classpath:reports/certificate.jrxml").getAbsolutePath()),
+					parameters // dynamic parameters
+					, dataSource.getConnection());
+
+			byte[] pdf = JasperExportManager.exportReportToPdf(empReport);
+			String pdfBas64 = Base64.getEncoder().encodeToString(pdf);
+			return "data:application/pdf;base64," + pdfBas64;
+
+		} catch (Exception e) {
+			System.out.println(e);
+			return null;
+		}
 	}
 
 }

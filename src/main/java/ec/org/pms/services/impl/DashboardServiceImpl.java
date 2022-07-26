@@ -41,7 +41,7 @@ public class DashboardServiceImpl implements DashboardService {
 		NumMuniAdd numMuniAdd = new NumMuniAdd();
 		int i = 0;
 		for (Municipio municipio : munis) {
-			if (municipio.getDocumento().length() > 1) {
+			if (municipio.getDocumento() != null) {
 				i = i + 1;
 			}
 		}

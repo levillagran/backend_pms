@@ -9,7 +9,7 @@ import ec.org.pms.payload.response.componenteResponse.HijoComponente;
 import ec.org.pms.payload.response.ejeResponse.DatosBarra;
 import ec.org.pms.payload.response.indicadorResponse.Root;
 
-public interface IndicadorService {
+public interface CertificacionService {
 	public List<Root> findIndicadores(Integer cantonId);
 	public List<Root> saveIndicador(IndicadorRequest indicadorSave);
 	public List<SemaforizacionResponse> semaforizacion(Integer cantonId);
@@ -17,5 +17,5 @@ public interface IndicadorService {
 	public List<Componente> findComponentes();
 	public List<HijoComponente> findComponenteDetalle(Integer componenteId);
 	public String comprobanteIndicador(Integer valorIndicadorId);
-	public boolean esCertificable(Integer cantonId);
+	public String createCertificado(Integer cantonId);
 }

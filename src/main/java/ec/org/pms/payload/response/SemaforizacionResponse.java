@@ -12,5 +12,7 @@ public class SemaforizacionResponse {
 	private Double valor;
 	private String tipo;
 	private String semaforizacion;
+	private Integer valorIndicadorId;
+	private boolean isVoucher;
 
 }

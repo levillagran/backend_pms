@@ -49,6 +49,6 @@ public class ValorIndicador {
 	@Column(name = "i_stt_id")
 	private Integer estado;
 	@Column(name = "s_mnc_fle")
-	private String archivo;
+	private Integer archivo;
 	
 }

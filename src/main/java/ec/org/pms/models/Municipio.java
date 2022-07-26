@@ -27,7 +27,7 @@ public class Municipio {
 	@Column(name = "s_cnt_nme")
 	private String canton;
 	@Column(name = "s_cnt_dcm")
-	private String documento;
+	private Integer documento;
 	@Column(name = "i_cnt_dte_str_prc_yr")
 	private Integer anio;
 	@Column(name = "i_cnt_dte_str_prc_mth")
@@ -44,4 +44,6 @@ public class Municipio {
 	private String observaciones;
 	@Column(name = "i_stt_cde")
 	private Integer estado;
+	@Column(name = "i_stt_ctf_cde")
+	private Integer estadoCtf;
 }
