@@ -2,7 +2,9 @@ package ec.org.pms.services.impl;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,8 @@ import org.springframework.stereotype.Service;
 import ec.org.pms.models.Documento;
 import ec.org.pms.models.Eje;
 import ec.org.pms.models.Indicador;
+import ec.org.pms.models.MediosVerificacion;
+import ec.org.pms.models.Municipio;
 import ec.org.pms.models.UserRole;
 import ec.org.pms.models.ValorIndicador;
 import ec.org.pms.payload.request.IndicadorRequest;
@@ -25,6 +29,8 @@ import ec.org.pms.payload.response.componenteResponse.HijoComponente;
 import ec.org.pms.repositories.DocumentoRepository;
 import ec.org.pms.repositories.EjeRepository;
 import ec.org.pms.repositories.IndicadorRepository;
+import ec.org.pms.repositories.MediosVerificacionRepository;
+import ec.org.pms.repositories.MunicipioRepository;
 import ec.org.pms.repositories.UserRoleRepository;
 import ec.org.pms.repositories.ValorIndicadorRepository;
 import ec.org.pms.services.IndicadorService;
@@ -42,12 +48,16 @@ public class IndicadorServiceImpl implements IndicadorService {
 	private UserRoleRepository userRoleRepository;
 	@Autowired
 	private DocumentoRepository docRepository;
+	@Autowired
+	private MediosVerificacionRepository meanRepo;
+	@Autowired
+	private MunicipioRepository muniRepo;
 
 	@Override
 	public List<Root> findIndicadores(Integer personaId) {
-		List<Eje> ejes = ejeRepository.findByIdLessThan(10);
+		List<Eje> ejes = ejeRepository.findByIdLessThanOrderByIdAsc(10);
 		List<Eje> determinantes = ejeRepository.findByIdGreaterThan(10);
-		List<Indicador> indicadores = (List<Indicador>) indicadorRepository.findAll();
+		List<Indicador> indicadores = (List<Indicador>) indicadorRepository.findAllByOrderByCodeAsc();
 		UserRole user = userRoleRepository.findById(personaId).get();
 		Integer cantonId = user.getEntId();
 		List<ValorIndicador> resultados = valorIndicadorRepository.findByCantonId(cantonId);
@@ -63,6 +73,7 @@ public class IndicadorServiceImpl implements IndicadorService {
 
 		childres = new ArrayList<>();
 		for (Indicador indicador : indicadores) {
+			//System.out.println(indicador);
 			data = new Datos();
 			data.setIndicadorId(indicador.getId());
 			data.setEjeId(indicador.getEjeId());
@@ -102,10 +113,16 @@ public class IndicadorServiceImpl implements IndicadorService {
 						data.setFont(valorIndicador.getFuente());
 					}
 					if (valorIndicador.getArchivo() != null) {
-						data.setArchivo(true);
+						data.setArchivoId(valorIndicador.getArchivo());
+						Documento doc = docRepository.findById(valorIndicador.getArchivo()).get();
+						// System.out.println(doc.getDocumento());
+						data.setArchivo(doc.getDocumento());
+						data.setDocUno(doc.getDocUno());
 					} else {
-						data.setArchivo(false);
+						data.setArchivo(null);
+						data.setDocUno("");
 					}
+
 				}
 			}
 			data.setOption1(indicador.getInicial());
@@ -186,22 +203,30 @@ public class IndicadorServiceImpl implements IndicadorService {
 		ValorIndicador indicador = new ValorIndicador();
 		int level = indicadorRepository.findBycode(Integer.valueOf(indicadorSave.getCode())).getId();
 		UserRole userRol = userRoleRepository.findFirstByPersonId(indicadorSave.getUserId());
-		if (indicadorSave.getArchivo().length() > 1) {
+		if (indicadorSave.getArchivoId() == null) {
 			Documento doc = docRepository.findFirstByOrderByIdDesc();
 			Documento docAux = new Documento();
 			docAux.setId(doc.getId() + 1);
 			docAux.setTypeId(2);
 			docAux.setDocumento(indicadorSave.getArchivo());
+			docAux.setDocUno(indicadorSave.getDocUno());
 			docRepository.save(docAux);
 			indicador.setArchivo(docAux.getId());
 		} else {
+			Documento doc = docRepository.findById(indicadorSave.getArchivoId()).get();
+			doc.setDocumento(indicadorSave.getArchivo());
+			doc.setDocUno(indicadorSave.getDocUno());
+			docRepository.save(doc);
 			indicador = valorIndicadorRepository.findById(indicadorSave.getValueIndicadorId()).get();
 		}
 		if (indicadorSave.getValueIndicadorId() != null) {
 			indicador.setId(indicadorSave.getValueIndicadorId());
 		} else {
 			ValorIndicador indicadorAux = valorIndicadorRepository.findFirstByOrderByIdDesc();
-			indicador.setId(indicadorAux.getId() + 1);
+			if (indicadorAux == null)
+				indicador.setId(1);
+			else
+				indicador.setId(indicadorAux.getId() + 1);
 		}
 		indicador.setCantonId(userRol.getEntId());
 		indicador.setEjeId(level);
@@ -228,7 +253,7 @@ public class IndicadorServiceImpl implements IndicadorService {
 
 	@Override
 	public List<SemaforizacionResponse> semaforizacion(Integer personaId) {
-		List<Eje> ejes = ejeRepository.findByIdLessThan(10);
+		List<Eje> ejes = ejeRepository.findByIdLessThanOrderByIdAsc(10);
 		List<Eje> determinantes = ejeRepository.findByIdGreaterThan(10);
 		List<Indicador> indicadores = (List<Indicador>) indicadorRepository.findAll();
 		SemaforizacionResponse semaforo;
@@ -256,6 +281,7 @@ public class IndicadorServiceImpl implements IndicadorService {
 							if (resultado != null) {
 								double DoubleValue = resultado.getValor();
 								semaforo.setValor(resultado.getValor());
+								semaforo.setValorEvaluacion(resultado.getValorEvaluacion());
 								semaforo.setTipo(indicador.getType());
 								int IntValue = (int) DoubleValue;
 
@@ -309,7 +335,7 @@ public class IndicadorServiceImpl implements IndicadorService {
 
 	@Override
 	public DatosBarra ejes(Integer personaId) {
-		List<Eje> ejes = ejeRepository.findByIdLessThan(10);
+		List<Eje> ejes = ejeRepository.findByIdLessThanOrderByIdAsc(10);
 		List<Eje> determinantes = ejeRepository.findByIdGreaterThan(10);
 		List<Indicador> indicadores = (List<Indicador>) indicadorRepository.findAll();
 		DatosBarra barData = new DatosBarra();
@@ -420,7 +446,7 @@ public class IndicadorServiceImpl implements IndicadorService {
 
 	@Override
 	public List<Componente> findComponentes() {
-		List<Eje> ejes = ejeRepository.findByIdLessThan(10);
+		List<Eje> ejes = ejeRepository.findByIdLessThanOrderByIdAsc(10);
 		List<Componente> comps = new ArrayList<>();
 		for (Eje eje : ejes) {
 			Componente comp = new Componente();
@@ -490,6 +516,39 @@ public class IndicadorServiceImpl implements IndicadorService {
 	public boolean esCertificable(Integer personaId) {
 		UserRole user = userRoleRepository.findById(personaId).get();
 		return valorIndicadorRepository.existsByCantonIdAndAnio(user.getEntId(), java.time.LocalDate.now().getYear());
+	}
+
+	@Override
+	public List<String> findFuentes(Integer id) {
+		UserRole user = userRoleRepository.findById(id).get();
+		Integer cantonId = user.getEntId();
+		List<ValorIndicador> valorIndis = valorIndicadorRepository.findByCantonId(cantonId);
+		List<String> fuentes = new ArrayList<>();
+		for (ValorIndicador valorIndi : valorIndis) {
+			if (valorIndi.getFuente() != null && valorIndi.getFuente().length() > 0) {
+				fuentes.add(valorIndi.getFuente());
+			}
+		}
+		Set<String> set = new LinkedHashSet<>(fuentes);
+		List<String> listWithoutDuplicates = new ArrayList<>(set);
+		return listWithoutDuplicates;
+	}
+
+	@Override
+	public List<MediosVerificacion> findMedios(Integer id) {
+		return meanRepo.findByCodeOrderByIdAsc(id);
+	}
+	
+	@Override
+	public List<Root> deleteIndicador(Integer id) {
+		ValorIndicador valIn = valorIndicadorRepository.findById(id).get();
+		Municipio muni = muniRepo.findById(valIn.getCantonId()).get();
+		UserRole usuarioRol = userRoleRepository.findByEntId(muni.getId());
+		if (valIn.getArchivo() != null || valIn.getArchivo() > 0) {
+			docRepository.deleteById(valIn.getArchivo());
+		} 
+		valorIndicadorRepository.deleteById(id);
+		return findIndicadores(usuarioRol.getPersonId());
 	}
 
 }

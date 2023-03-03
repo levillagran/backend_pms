@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import ec.org.pms.models.MediosVerificacion;
 import ec.org.pms.payload.request.IndicadorRequest;
 import ec.org.pms.payload.response.SemaforizacionResponse;
 import ec.org.pms.payload.response.indicadorResponse.Root;
@@ -46,6 +47,21 @@ public class IndicadorController {
 	@GetMapping(value = "/indicadores/certificable/{id}")
 	public boolean esCertificable(@PathVariable String id) {
 		return indicadorService.esCertificable(Integer.parseInt(id));
+	}
+	
+	@GetMapping(value = "/fuentes/{id}")
+	public List<String> fuentes(@PathVariable Integer id) {
+		return indicadorService.findFuentes(id);
+	}
+	
+	@GetMapping(value = "/medios/{id}")
+	public List<MediosVerificacion> medios(@PathVariable Integer id) {
+		return indicadorService.findMedios(id);
+	}
+	
+	@GetMapping(value = "/valorIndicadorDelete/{id}")
+	public List<Root> deleteIndicador(@PathVariable Integer id) {
+		return indicadorService.deleteIndicador(id);
 	}
 
 }

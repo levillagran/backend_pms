@@ -9,10 +9,15 @@ import org.springframework.stereotype.Service;
 import ec.org.pms.models.Municipio;
 import ec.org.pms.models.Provincia;
 import ec.org.pms.models.UserRole;
+import ec.org.pms.models.UserZona;
+import ec.org.pms.models.Zona;
 import ec.org.pms.payload.response.MunicipiosNoAddResponse;
+import ec.org.pms.payload.response.ZonalesNoAddResponse;
 import ec.org.pms.repositories.MunicipioRepository;
 import ec.org.pms.repositories.ProvinciaRepository;
 import ec.org.pms.repositories.UserRoleRepository;
+import ec.org.pms.repositories.UserZonaRepository;
+import ec.org.pms.repositories.ZonaRepository;
 import ec.org.pms.services.CantonService;
 
 @Service("cantonService")
@@ -24,12 +29,16 @@ public class CantonServiceImpl implements CantonService {
 	private ProvinciaRepository provinciaRepository;
 	@Autowired
 	private UserRoleRepository userRoleRepository;
+	@Autowired
+	private ZonaRepository zRepo;
+	@Autowired
+	private UserZonaRepository uzRepo;
 
 	@Override
 	public List<MunicipiosNoAddResponse> findCantones() {
 		List<Municipio> municipios = new ArrayList<>();
 		List<MunicipiosNoAddResponse> municipiosAdd = new ArrayList<>();
-		municipios = municipioRepository.findAllByEstado(902);
+		municipios = municipioRepository.findAllByEstadoAndProvinciaIdLessThan(902, 30);
 		for (Municipio municipio : municipios) {
 			Provincia prov = provinciaRepository.findByCodigoAndBandera(municipio.getProvinciaId(), 100);
 			MunicipiosNoAddResponse munAdd = new MunicipiosNoAddResponse();
@@ -66,29 +75,33 @@ public class CantonServiceImpl implements CantonService {
 				minicipiosSinUsuario.add(minicipioSinUsuario);
 			}
 		}
-
-		/*
-		 * List<UsuariosResponse> listU = new ArrayList<>(); listU =
-		 * usuarioService.findUsersAdd(); System.out.println(listU.size());
-		 * List<Municipio> municipios = (List<Municipio>) municipioRepository.findAll();
-		 * List<MunicipiosNoAddResponse> munProvMove = new ArrayList<>();
-		 * 
-		 * for (Municipio municipio : municipios) { if (municipio.getProvinciaId() > 0)
-		 * { Provincia prov =
-		 * provinciaRepository.findByCodigoAndBandera(municipio.getProvinciaId(), 100);
-		 * MunicipiosNoAddResponse munAdd = new MunicipiosNoAddResponse();
-		 * munAdd.setCantonId(municipio.getId());
-		 * munAdd.setCanton(municipio.getCanton());
-		 * munAdd.setProvinciaId(municipio.getProvinciaId());
-		 * munAdd.setProvincia(prov.getProvincia()); munProv.add(munAdd); } }
-		 * 
-		 * for (UsuariosResponse user : listU) { for (MunicipiosNoAddResponse munPro :
-		 * munProv) { if (user.getCantonId().equals(munPro.getCantonId())) {
-		 * munProvMove.add(munPro); } } }
-		 * 
-		 * for (MunicipiosNoAddResponse mP : munProvMove) { munProv.remove(mP); }
-		 */
 		return minicipiosSinUsuario;
+	}
+
+	@Override
+	public List<ZonalesNoAddResponse> findZonales() {
+		List<ZonalesNoAddResponse> ZonalesSend = new ArrayList<>();
+		
+		List<Zona> zonas = (List<Zona>) zRepo.findAll();
+		List<Zona> zonasAux = new ArrayList<>();
+
+		for (Zona zona : zonas) {
+			UserZona uz = uzRepo.findByZonaId(zona.getId());
+			if (uz == null) {
+				zonasAux.add(zona);
+			}
+		}
+		
+		if (zonasAux.size() > 0) {
+			for (Zona zona : zonasAux) {
+				ZonalesNoAddResponse zonales = new ZonalesNoAddResponse();
+				zonales.setZonalId(zona.getId());
+				zonales.setZonal(zona.getZona());
+				ZonalesSend.add(zonales);
+			}
+		}
+		
+		return ZonalesSend;
 	}
 
 }

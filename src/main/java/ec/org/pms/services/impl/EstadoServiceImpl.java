@@ -49,5 +49,31 @@ public class EstadoServiceImpl implements EstadoService {
 		}
 		
 	}
+	
+	@Override
+	public boolean certificar(Integer cantonId) {
+		Municipio muni = municipioRepository.findById(cantonId).get();
+		try {
+			muni.setEstadoCtf(203);
+			municipioRepository.save(muni);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+		
+	}
+
+	@Override
+	public boolean emitido(Integer cantonId) {
+		Municipio muni = municipioRepository.findById(cantonId).get();
+		try {
+			muni.setEstadoCtf(202);
+			municipioRepository.save(muni);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+		
+	}
 
 }

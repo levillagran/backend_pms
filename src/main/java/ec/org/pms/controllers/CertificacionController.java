@@ -56,5 +56,10 @@ public class CertificacionController {
 	public String createCertificado(@PathVariable Integer id) {
 		return cerService.createCertificado(id);
 	}
+	
+	@GetMapping(value = "/certificadoPerson/{id}")
+	public String createCertificadoPerson(@PathVariable Integer id) {
+		return cerService.createCertificadoPerson(id);
+	}
 
 }

@@ -17,6 +17,8 @@ public class IndicadorRequest {
 	private Date dateRegister;
 	private String font;
 	private String obs;
-	private String  archivo;
+	private Integer archivoId;
+	private String archivo;
+	private String docUno;
 
 }

@@ -1,6 +1,5 @@
 package ec.org.pms.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ec.org.pms.payload.request.UsuarioRequest;
 import ec.org.pms.payload.response.UsuariosResponse;
+import ec.org.pms.payload.response.ZonalesResponse;
 import ec.org.pms.services.UsuarioService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -24,14 +24,22 @@ public class UserController {
 	
 	@GetMapping("/all")
 	public List<UsuariosResponse> listUsers() {
-		List<UsuariosResponse> listU = new ArrayList<>();
-		listU = usuarioService.findUsersAdd();
-		return listU;
+		return usuarioService.findUsersAdd();
 	}
 	
 	@PostMapping(value = "/save")
 	public List<UsuariosResponse> saveUsuario(@RequestBody UsuarioRequest usuario) {
 		return (List<UsuariosResponse>) usuarioService.save(usuario);
+	}
+	
+	@GetMapping("/allZonales")
+	public List<ZonalesResponse> findZonales() {
+		return usuarioService.findZonales();
+	}
+	
+	@PostMapping(value = "/saveZonales")
+	public List<ZonalesResponse> saveUsuarioZonal(@RequestBody UsuarioRequest usuario) {
+		return (List<ZonalesResponse>) usuarioService.saveUsuarioZonal(usuario);
 	}
 
 }

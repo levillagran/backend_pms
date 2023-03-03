@@ -18,4 +18,5 @@ public interface CertificacionService {
 	public List<HijoComponente> findComponenteDetalle(Integer componenteId);
 	public String comprobanteIndicador(Integer valorIndicadorId);
 	public String createCertificado(Integer cantonId);
+	public String createCertificadoPerson(Integer personaId);
 }

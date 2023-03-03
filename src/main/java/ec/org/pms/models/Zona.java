@@ -16,16 +16,17 @@ import javax.persistence.Table;
 
 @Data
 @Entity
-@Table(name = "dta_tbl_doc")
-public class Documento {
+@Table(name = "dpa_tbl_znl")
+public class Zona {
 	
 	@Id
-	@Column(name = "i_doc_id")
+	@Column(name = "i_znl_cde")
 	private Integer id;
-	@Column(name = "i_doc_typ")
-	private Integer typeId;
-	@Column(name = "s_doc_doc")
-	private String documento;
-	@Column(name = "doc_uno")
-	private String docUno;
+	@Column(name = "s_znl_nme")
+	private String zona;
+	@Column(name = "s_znl_obs")
+	private String observaciones;
+	@Column(name = "i_stt_cde")
+	private Integer estado;
+	
 }

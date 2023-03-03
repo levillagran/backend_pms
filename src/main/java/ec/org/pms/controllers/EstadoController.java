@@ -34,5 +34,15 @@ public class EstadoController {
 	public boolean estadoEvaluar(@PathVariable String id) {
 		return estadoService.evaluar(Integer.parseInt(id));
 	}
+	
+	@GetMapping(value = "/certificacion/certificar/{id}")
+	public boolean estadoCertificar(@PathVariable String id) {
+		return estadoService.certificar(Integer.parseInt(id));
+	}
+	
+	@GetMapping(value = "/certificacion/emitir/{id}")
+	public boolean estadoEmitido(@PathVariable String id) {
+		return estadoService.emitido(Integer.parseInt(id));
+	}
 
 }

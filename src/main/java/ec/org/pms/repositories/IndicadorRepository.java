@@ -8,6 +8,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import ec.org.pms.models.Indicador;
 
 public interface IndicadorRepository extends PagingAndSortingRepository<Indicador, Integer>{
+	List<Indicador> findAllByOrderByCodeAsc();
 	Indicador findBycode(Integer code);
 	List<Indicador> findByEjeId(Integer code);
 	int countByIdGreaterThan(Integer valor);

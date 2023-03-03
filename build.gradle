@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'ec.org.pms'
-version = '0.1.1-SNAPSHOT'
+version = '0.1.B-SNAPSHOT'
 sourceCompatibility = '11'
 
 configurations {
@@ -30,8 +30,14 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 	
-	implementation group: 'net.sf.jasperreports', name: 'jasperreports', version: '6.19.0'
+	// https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports
+	implementation group: 'net.sf.jasperreports', name: 'jasperreports', version: '6.20.0'
+	implementation group: 'org.eclipse.birt.runtime.3_7_1', name: 'com.lowagie.text', version: '2.1.7'
 	
+}
+
+configurations.implementation {
+    exclude group: 'com.lowagie', module: 'itext'
 }
 
 test {

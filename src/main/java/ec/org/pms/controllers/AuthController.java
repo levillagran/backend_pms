@@ -19,12 +19,16 @@ import org.springframework.web.bind.annotation.RestController;
 import ec.org.pms.models.Municipio;
 import ec.org.pms.models.Role;
 import ec.org.pms.models.UserRole;
+import ec.org.pms.models.UserZona;
+import ec.org.pms.models.Zona;
 import ec.org.pms.payload.request.LoginRequest;
 import ec.org.pms.payload.response.JwtResponse;
 import ec.org.pms.repositories.MunicipioRepository;
 import ec.org.pms.repositories.RoleRepository;
 import ec.org.pms.repositories.UserRepository;
 import ec.org.pms.repositories.UserRoleRepository;
+import ec.org.pms.repositories.UserZonaRepository;
+import ec.org.pms.repositories.ZonaRepository;
 import ec.org.pms.security.jwt.JwtUtils;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -42,6 +46,10 @@ public class AuthController {
 	private RoleRepository rolesRepository;
 	@Autowired
 	private MunicipioRepository municipioRepository;
+	@Autowired
+	private UserZonaRepository uzrepo;
+	@Autowired
+	private ZonaRepository zrepo;
 
 	@Autowired
 	PasswordEncoder encoder;
@@ -64,60 +72,18 @@ public class AuthController {
 			Role rol = rolesRepository.findById(userol.getRolId()).get();
 			roles.add(rol.getName());
 		}
+		Municipio usuario = new Municipio();
 		UserRole usRolId = usersRolesRepository.findFirstByPersonId(user.getId());
-		Municipio usuario = municipioRepository.findById(usRolId.getEntId()).get();
+		if (usRolId.getEntId() != null) {
+			usuario = municipioRepository.findById(usRolId.getEntId()).get();
+		}else {
+			UserZona uz = uzrepo.findByPersonId(usRolId.getPersonId());
+			Zona z = zrepo.findById(uz.getZonaId()).get();
+			usuario.setId(z.getId());
+			usuario.setCanton(user.getUsername());
+		}
 		
 		return ResponseEntity.ok(new JwtResponse(jwt, user.getId(), usuario.getId(), usuario.getCanton(), user.getUsername(), roles));
 	}
 
-	/*
-	@PostMapping("/signup")
-	public ResponseEntity<?> registerUser(@RequestBody SignupRequest signUpRequest) {
-		if (usersRepository.existsByUsername(signUpRequest.getUsername())) {
-			return ResponseEntity
-					.badRequest()
-					.body(new MessageResponse("Error: Username is already taken!"));
-		}
-
-		// Create new user's account
-		User user = new User(signUpRequest.getUsername(), 
-							 signUpRequest.getEmail(),
-							 encoder.encode(signUpRequest.getPassword()));
-
-		Set<String> strRoles = signUpRequest.getRole();
-		Set<Role> roles = new HashSet<>();
-
-		if (strRoles == null) {
-			Role userRole = rolesRepository.findByName(ERole.ROLE_USER)
-					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-			roles.add(userRole);
-		} else {
-			strRoles.forEach(role -> {
-				switch (role) {
-				case "admin":
-					Role adminRole = rolesRepository.findByName(ERole.ROLE_ADMIN)
-							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-					roles.add(adminRole);
-
-					break;
-				case "mod":
-					Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-					roles.add(modRole);
-
-					break;
-				default:
-					Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-					roles.add(userRole);
-				}
-			});
-		}
-
-		user.setRoles(roles);
-		userRepository.save(user);
-
-		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-	}
-	*/
 }

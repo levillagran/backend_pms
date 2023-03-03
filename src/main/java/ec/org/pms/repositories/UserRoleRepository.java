@@ -12,4 +12,6 @@ public interface UserRoleRepository extends PagingAndSortingRepository<UserRole,
 	List<UserRole> findByPersonId(Integer personId);
 	UserRole findFirstByPersonId(Integer personId);
 	UserRole findFirstByOrderByIdDesc();
+	UserRole findByEntId(Integer cantonId);
+	List<UserRole> findByRolId(Integer rolId);
 }

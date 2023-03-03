@@ -46,4 +46,8 @@ public class Municipio {
 	private Integer estado;
 	@Column(name = "i_stt_ctf_cde")
 	private Integer estadoCtf;
+	@Column(name = "drive_id")
+	private Integer drive_id;
+	@Column(name = "evaluation_request_id")
+	private Integer evaluationId;
 }

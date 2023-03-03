@@ -6,25 +6,125 @@
 	<subDataset name="Dataset1" uuid="823fdd45-ff11-47ee-a28a-fcb8bf840949"/>
 	<parameter name="municipioId" class="java.lang.Integer"/>
 	<queryString language="SQL">
-		<![CDATA[SELECT c.i_cnt_cde code, c.s_cnt_nme nombre 
-					FROM dpa_tbl_cnt c
-					WHERE c.i_cnt_cde = $P{municipioId}]]>
+		<![CDATA[SELECT c.i_cnt_cde code, c.s_cnt_nme nombre, 
+p.r_crt_nmb , (select  case when
+(
+(					
+SELECT count(*)
+FROM public.ind_tbl_main
+)*(
+SELECT count(p.r_crt_nmb ) + (
+SELECT count(p.r_crt_nmb ) 
+FROM dpa_tbl_cnt c
+join pms_tbl_mnc p on c.i_cnt_cde = p.i_cnt_cde
+join ind_tbl_main i on i.i_main_id = p.i_lv3_id
+WHERE i.s_main_unt in ('Opciones', 'Tipo', 'Diferencia de Tasas', 'Variación Anual', 'Cantidad') 
+and c.i_cnt_cde = $P{municipioId} 
+and (p.r_crt_nmb::numeric = 3)
+) 
+FROM dpa_tbl_cnt c
+join pms_tbl_mnc p on c.i_cnt_cde = p.i_cnt_cde
+join ind_tbl_main i on i.i_main_id = p.i_lv3_id
+WHERE i.s_main_unt not in ('Opciones', 'Tipo', 'Diferencia de Tasas', 'Variación Anual', 'Cantidad') 
+and c.i_cnt_cde = $P{municipioId} 
+and (p.r_crt_nmb::numeric BETWEEN i.s_main_v2::numeric AND i.s_main_v3::numeric)
+) /100
+	) BETWEEN 0 AND 35 then 'SIN CERTIFICACIÓN' 
+when
+(
+(					
+SELECT count(*)
+FROM public.ind_tbl_main
+)*(
+SELECT count(p.r_crt_nmb ) + (
+SELECT count(p.r_crt_nmb ) 
+FROM dpa_tbl_cnt c
+join pms_tbl_mnc p on c.i_cnt_cde = p.i_cnt_cde
+join ind_tbl_main i on i.i_main_id = p.i_lv3_id
+WHERE i.s_main_unt in ('Opciones', 'Tipo', 'Diferencia de Tasas', 'Variación Anual', 'Cantidad') 
+and c.i_cnt_cde = $P{municipioId} 
+and (p.r_crt_nmb::numeric = 3)
+) 
+FROM dpa_tbl_cnt c
+join pms_tbl_mnc p on c.i_cnt_cde = p.i_cnt_cde
+join ind_tbl_main i on i.i_main_id = p.i_lv3_id
+WHERE i.s_main_unt not in ('Opciones', 'Tipo', 'Diferencia de Tasas', 'Variación Anual', 'Cantidad') 
+and c.i_cnt_cde = $P{municipioId} 
+and (p.r_crt_nmb::numeric BETWEEN i.s_main_v2::numeric AND i.s_main_v3::numeric)
+) /100
+	) BETWEEN 35 AND 60 then 'PROMOTOR DE LA SALUD'
+when
+(
+(					
+SELECT count(*)
+FROM public.ind_tbl_main
+)*(
+SELECT count(p.r_crt_nmb ) + (
+SELECT count(p.r_crt_nmb ) 
+FROM dpa_tbl_cnt c
+join pms_tbl_mnc p on c.i_cnt_cde = p.i_cnt_cde
+join ind_tbl_main i on i.i_main_id = p.i_lv3_id
+WHERE i.s_main_unt in ('Opciones', 'Tipo', 'Diferencia de Tasas', 'Variación Anual', 'Cantidad') 
+and c.i_cnt_cde = $P{municipioId} 
+and (p.r_crt_nmb::numeric = 3)
+) 
+FROM dpa_tbl_cnt c
+join pms_tbl_mnc p on c.i_cnt_cde = p.i_cnt_cde
+join ind_tbl_main i on i.i_main_id = p.i_lv3_id
+WHERE i.s_main_unt not in ('Opciones', 'Tipo', 'Diferencia de Tasas', 'Variación Anual', 'Cantidad') 
+and c.i_cnt_cde = $P{municipioId} 
+and (p.r_crt_nmb::numeric BETWEEN i.s_main_v2::numeric AND i.s_main_v3::numeric)
+)/100
+	) BETWEEN 60 AND 85 then 'GARANTE DE LA SALUD'	
+	when
+(
+(					
+SELECT count(*)
+FROM public.ind_tbl_main
+)*(
+SELECT count(p.r_crt_nmb ) + (
+SELECT count(p.r_crt_nmb ) 
+FROM dpa_tbl_cnt c
+join pms_tbl_mnc p on c.i_cnt_cde = p.i_cnt_cde
+join ind_tbl_main i on i.i_main_id = p.i_lv3_id
+WHERE i.s_main_unt in ('Opciones', 'Tipo', 'Diferencia de Tasas', 'Variación Anual', 'Cantidad') 
+and c.i_cnt_cde = $P{municipioId} 
+and (p.r_crt_nmb::numeric = 3)
+) 
+FROM dpa_tbl_cnt c
+join pms_tbl_mnc p on c.i_cnt_cde = p.i_cnt_cde
+join ind_tbl_main i on i.i_main_id = p.i_lv3_id
+WHERE i.s_main_unt not in ('Opciones', 'Tipo', 'Diferencia de Tasas', 'Variación Anual', 'Cantidad') 
+and c.i_cnt_cde = $P{municipioId} 
+and (p.r_crt_nmb::numeric BETWEEN i.s_main_v2::numeric AND i.s_main_v3::numeric)
+)/100
+	) BETWEEN 85 AND 1000 then 'SALUDABLE'
+	end ) as calificacion
+FROM dpa_tbl_cnt c
+join pms_tbl_mnc p on c.i_cnt_cde = p.i_cnt_cde
+join ind_tbl_main i on i.i_main_id = p.i_lv3_id
+WHERE c.i_cnt_cde = $P{municipioId}]]>
 	</queryString>
 	<field name="nombre" class="java.lang.String"/>
+	<field name="calificacion" class="java.lang.String"/>
 	<background>
 		<band height="555" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<image>
-				<reportElement x="0" y="0" width="130" height="555" uuid="753485b8-0df3-4c63-8f53-09131f87a4a7"/>
-				<imageExpression><![CDATA["bordeIzCertificado.png"]]></imageExpression>
-			</image>
-			<image>
-				<reportElement x="120" y="100" width="690" height="455" uuid="fefffd42-9b2e-40a1-ba13-3fe3767c3d13"/>
+				<reportElement x="120" y="100" width="610" height="410" uuid="6ef86c9d-4724-4961-a227-6eaf7eadfa39"/>
 				<imageExpression><![CDATA["fondoCertificado.png"]]></imageExpression>
 			</image>
 			<image>
-				<reportElement x="640" y="0" width="170" height="110" uuid="befa185e-7125-4ea0-9891-dbd222669144"/>
+				<reportElement x="631" y="0" width="170" height="110" uuid="befa185e-7125-4ea0-9891-dbd222669144"/>
 				<imageExpression><![CDATA["logoCertificado.png"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="631" y="515" width="171" height="40" uuid="3e900e6c-2b61-4da0-a6cb-aa83374c002b"/>
+				<imageExpression><![CDATA["logoMSP.png"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="1" y="0" width="119" height="555" uuid="ba9b9bbe-641b-4fbc-83ca-47d5c2dd05f4"/>
+				<imageExpression><![CDATA["bordeIzCertificado.png"]]></imageExpression>
 			</image>
 		</band>
 	</background>
@@ -46,14 +146,7 @@
 				<text><![CDATA[CERTIFICADO COMO MUNICIPIO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="179" y="175" width="421" height="40" uuid="0b0007b6-b551-4af0-9acd-7bbd328c2772"/>
-				<textElement textAlignment="Center" verticalAlignment="Top">
-					<font fontName="Arial Narrow" size="30" isBold="true"/>
-				</textElement>
-				<text><![CDATA[PROMOTOR DE LA SALUD]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="179" y="270" width="420" height="35" uuid="7ac53a34-e463-40ca-9954-62acd14cff24"/>
+				<reportElement x="70" y="270" width="650" height="35" uuid="7ac53a34-e463-40ca-9954-62acd14cff24"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial Narrow" size="19"/>
 				</textElement>
@@ -86,6 +179,13 @@
 					<font fontName="Arial Narrow" size="15"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="180" y="180" width="421" height="41" uuid="277e2d65-8e7b-4dc2-93b1-9c4e59a11b43"/>
+				<textElement textAlignment="Center" verticalAlignment="Justified">
+					<font fontName="Arial Narrow" size="30" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{calificacion}]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>

@@ -12,6 +12,7 @@ public class MunicipioAdherirRequest {
 	private Date fechaAdd;
 	private Integer estado;
 	private String observaciones;
+	private String  driveLink;
 	private String  archivo;
-
+	private boolean solicitud;
 }

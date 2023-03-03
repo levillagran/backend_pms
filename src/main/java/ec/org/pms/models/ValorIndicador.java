@@ -50,5 +50,7 @@ public class ValorIndicador {
 	private Integer estado;
 	@Column(name = "s_mnc_fle")
 	private Integer archivo;
+	@Column(name = "evaluation_value")
+	private Double valorEvaluacion;
 	
 }

@@ -25,10 +25,12 @@ public class Datos {
 	private String dateRegister;
 	private String font;
 	private String obs;
-	private Boolean archivo;
+	private Integer archivoId;
+	private String archivo;
 	private Boolean cuantitativo;
 	private Integer limite1;
 	private Integer limite2;
 	private Double limite3;
 	private Integer limite4;
+	private String docUno;
 }

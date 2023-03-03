@@ -57,7 +57,7 @@ public class CertificacionServiceImpl implements CertificacionService {
 
 	@Override
 	public List<Root> findIndicadores(Integer personaId) {
-		List<Eje> ejes = ejeRepository.findByIdLessThan(10);
+		List<Eje> ejes = ejeRepository.findByIdLessThanOrderByIdAsc(10);
 		List<Eje> determinantes = ejeRepository.findByIdGreaterThan(10);
 		List<Indicador> indicadores = (List<Indicador>) indicadorRepository.findAll();
 		UserRole user = userRoleRepository.findById(personaId).get();
@@ -113,11 +113,11 @@ public class CertificacionServiceImpl implements CertificacionService {
 					if (valorIndicador.getFuente() != null) {
 						data.setFont(valorIndicador.getFuente());
 					}
-					if (valorIndicador.getArchivo() != null) {
+					/*if (valorIndicador.getArchivo() != null) {
 						data.setArchivo(true);
 					} else {
 						data.setArchivo(false);
-					}
+					}*/
 				}
 			}
 			data.setOption1(indicador.getInicial());
@@ -240,7 +240,7 @@ public class CertificacionServiceImpl implements CertificacionService {
 
 	@Override
 	public List<SemaforizacionResponse> semaforizacion(Integer cantonId) {
-		List<Eje> ejes = ejeRepository.findByIdLessThan(10);
+		List<Eje> ejes = ejeRepository.findByIdLessThanOrderByIdAsc(10);
 		List<Eje> determinantes = ejeRepository.findByIdGreaterThan(10);
 		List<Indicador> indicadores = (List<Indicador>) indicadorRepository.findAll();
 		SemaforizacionResponse semaforo;
@@ -262,9 +262,8 @@ public class CertificacionServiceImpl implements CertificacionService {
 							semaforo.setIndicador(indicador.getName());
 							//UserRole user = userRoleRepository.findById(personaId).get();
 							//Integer cantonId = user.getEntId();
-							ValorIndicador resultado = valorIndicadorRepository.findByCantonIdAndEjeId(cantonId,
-									indicador.getId());
-
+							//System.out.println(indicador.getId());
+							ValorIndicador resultado = valorIndicadorRepository.findByCantonIdAndEjeId(cantonId, indicador.getId());
 							if (resultado != null) {
 								double DoubleValue = resultado.getValor();
 								semaforo.setValor(resultado.getValor());
@@ -323,7 +322,7 @@ public class CertificacionServiceImpl implements CertificacionService {
 
 	@Override
 	public DatosBarra ejes(Integer personaId) {
-		List<Eje> ejes = ejeRepository.findByIdLessThan(10);
+		List<Eje> ejes = ejeRepository.findByIdLessThanOrderByIdAsc(10);
 		List<Eje> determinantes = ejeRepository.findByIdGreaterThan(10);
 		List<Indicador> indicadores = (List<Indicador>) indicadorRepository.findAll();
 		DatosBarra barData = new DatosBarra();
@@ -434,7 +433,7 @@ public class CertificacionServiceImpl implements CertificacionService {
 
 	@Override
 	public List<Componente> findComponentes() {
-		List<Eje> ejes = ejeRepository.findByIdLessThan(10);
+		List<Eje> ejes = ejeRepository.findByIdLessThanOrderByIdAsc(10);
 		List<Componente> comps = new ArrayList<>();
 		for (Eje eje : ejes) {
 			Componente comp = new Componente();
@@ -505,6 +504,29 @@ public class CertificacionServiceImpl implements CertificacionService {
 		try {
 			Map<String, Object> parameters = new HashMap<>();
 			parameters.put("municipioId", cantonId);
+
+			JasperPrint empReport = JasperFillManager.fillReport(
+					JasperCompileManager.compileReport(
+							ResourceUtils.getFile("classpath:reports/certificate.jrxml").getAbsolutePath()),
+					parameters // dynamic parameters
+					, dataSource.getConnection());
+
+			byte[] pdf = JasperExportManager.exportReportToPdf(empReport);
+			String pdfBas64 = Base64.getEncoder().encodeToString(pdf);
+			return "data:application/pdf;base64," + pdfBas64;
+
+		} catch (Exception e) {
+			System.out.println(e);
+			return null;
+		}
+	}
+	
+	@Override
+	public String createCertificadoPerson(Integer personaId) {
+		try {
+			Map<String, Object> parameters = new HashMap<>();
+			UserRole user = userRoleRepository.findById(personaId).get();
+			parameters.put("municipioId", user.getEntId());
 
 			JasperPrint empReport = JasperFillManager.fillReport(
 					JasperCompileManager.compileReport(

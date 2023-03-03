@@ -9,4 +9,5 @@ import ec.org.pms.models.Municipio;
 public interface MunicipioRepository extends PagingAndSortingRepository<Municipio, Integer>{
 	List<Municipio> findAllByEstado(Integer estadoId);
 	List<Municipio> findAllByEstadoCtf(Integer estadoId);
+	List<Municipio> findAllByEstadoAndProvinciaIdLessThan(Integer estadoId, Integer provinciaId);
 }
